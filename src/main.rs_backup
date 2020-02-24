@@ -1,0 +1,55 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
+struct Range {
+    start: usize,
+    end: usize,
+    value: usize,
+    next: Option<Box<Range>>,
+}
+
+impl Range {
+    fn add(&mut self, start: usize, end: usize, val: usize) {
+        if start == end {
+            return;
+        }
+        if start > end {
+            if let Some(next) = &mut self.next {
+                next.add(start, end, val)
+            }
+            return
+        }
+        if self.start < start && start<= self.end {
+        }
+    }
+
+    fn split(&mut self, start: usize) {
+        let new = Range {
+            start: start,
+            end: self.end,
+            value: self.value,
+            next: self.next,
+        };
+        self.end = start - 1;
+        self.next = Some(Box::new(new))
+    }
+}
+
+fn main() -> std::io::Result<()> {
+    let f = File::open("data.txt")?;
+    let f = BufReader::new(f);
+
+    let mut range = Range {
+        start: 1,
+        end: 10_000_000,
+        value: 0,
+        next: None,
+    };
+
+    f.lines().for_each(|line| {
+        let line = line.expect("unable to read line");
+        let split = line.split(' ');
+    });
+
+    Ok(())
+}
